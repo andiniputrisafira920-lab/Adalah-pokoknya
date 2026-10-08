@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Dark Letter</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050505;
+}
+
+body{
+    color:white;
+    font-family:"Cormorant Garamond",Georgia,serif;
+}
+
+#app{
+    width:100%;
+    height:100%;
+    position:relative;
+    overflow:hidden;
+    background:
+    radial-gradient(circle at 10% 20%,rgba(100,0,0,.25),transparent 25%),
+    radial-gradient(circle at 90% 70%,rgba(100,0,0,.2),transparent 28%),
+    #050505;
+}
+
+.blood{
+    position:absolute;
+    background:#470707;
+    opacity:.55;
+    filter:blur(5px);
+    border-radius:50%;
+    pointer-events:none;
+}
+
+.b1{
+    width:150px;
+    height:70px;
+    top:5%;
+    left:-40px;
+    transform:rotate(20deg);
+}
+
+.b2{
+    width:80px;
+    height:130px;
+    right:-20px;
+    top:35%;
+    transform:rotate(-20deg);
+}
+
+.b3{
+    width:150px;
+    height:70px;
+    right:5%;
+    bottom:4%;
+    transform:rotate(15deg);
+}
+
+.b4{
+    width:55px;
+    height:100px;
+    left:5%;
+    bottom:25%;
+}
+
+.page{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    text-align:center;
+}
+
+.page.active{
+    display:flex;
+    animation:fade .5s ease;
+}
+
+@keyframes fade{
+    from{opacity:0}
+    to{opacity:1}
+}
+
+.content{
+    width:min(94vw,560px);
+    max-height:94vh;
+    overflow:auto;
+    scrollbar-width:none;
+}
+
+.content::-webkit-scrollbar{
+    display:none;
+}
+
+.text{
+    font-size:clamp(20px,5vw,29px);
+    line-height:1.5;
+}
+
+.title{
+    font-size:clamp(23px,6vw,34px);
+    font-style:italic;
+    margin-bottom:15px;
+}
+
+.small{
+    color:#aaa;
+    font-size:17px;
+}
+
+.hero{
+    width:min(90vw,480px);
+    max-height:55vh;
+    object-fit:contain;
+    display:block;
+    margin:auto auto 18px;
+    filter:brightness(.88) contrast(1.08);
+    box-shadow:0 20px 60px #000;
+}
+
+.next{
+    background:#111;
+    border:1px solid #666;
+    color:white;
+    padding:11px 28px;
+    margin-top:18px;
+    font-family:"Cormorant Garamond",serif;
+    font-size:19px;
+    letter-spacing:2px;
+}
+
+.next:active{
+    transform:scale(.96);
+}
+
+.hidden{
+    display:none!important;
+}
+
+.videoPage{
+    padding:0;
+    background:#000;
+}
+
+.videoPage video,
+#endingVideo{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#000;
+}
+
+#error{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:#000;
+    color:#48ff70;
+    font-family:monospace;
+    font-size:14px;
+    line-height:1.7;
+    z-index:20;
+}
+
+#error.show{
+    display:flex;
+    animation:glitch .45s steps(2) infinite;
+}
+
+#error pre{
+    white-space:pre-wrap;
+    text-shadow:3px 0 #ff003c,-3px 0 #00ffff;
+}
+
+@keyframes glitch{
+    0%,100%{transform:none}
+    25%{transform:translateX(7px)}
+    50%{transform:translateX(-7px)}
+    75%{transform:translateX(3px)}
+}
+
+.paper{
+    width:min(92vw,550px);
+    max-height:90vh;
+    overflow:auto;
+    padding:30px 25px;
+    background:#d7d0c0;
+    color:#171717;
+    box-shadow:0 20px 70px #000;
+    position:relative;
+    clip-path:polygon(
+        2% 3%,98% 0,100% 97%,3% 100%,0 55%
+    );
+}
+
+.letter{
+    text-align:left;
+    font-size:clamp(19px,5vw,27px);
+    line-height:1.5;
+    white-space:pre-wrap;
+}
+
+.choiceGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.choice{
+    padding:6px;
+    background:#111;
+    border:1px solid #444;
+}
+
+.choice img{
+    display:block;
+    width:100%;
+    aspect-ratio:1/1;
+    object-fit:cover;
+}
+
+.choice.selected{
+    border:2px solid white;
+    box-shadow:0 0 15px rgba(255,255,255,.3);
+}
+
+.result{
+    min-height:60px;
+    margin-top:15px;
+    font-size:21px;
+    line-height:1.4;
+}
+
+.photoBox{
+    position:relative;
+    width:min(94vw,560px);
+    background:#111;
+    border:1px solid #444;
+    padding:7px;
+    margin:auto;
+}
+
+.photoBox img{
+    display:block;
+    width:100%;
+}
+
+#draw{
+    position:absolute;
+    left:7px;
+    top:7px;
+    width:calc(100% - 14px);
+    height:calc(100% - 14px);
+    touch-action:none;
+}
+
+.options{
+    display:grid;
+    gap:10px;
+    margin-top:18px;
+}
+
+.option{
+    width:100%;
+    padding:13px;
+    background:#101010;
+    border:1px solid #444;
+    color:white;
+    text-align:left;
+    font-family:"Cormorant Garamond",serif;
+    font-size:19px;
+}
+
+.option.selected{
+    border-color:white;
+}
+
+.option.wrong{
+    border-color:#d00025;
+    animation:shake .3s;
+}
+
+.option.correct{
+    border-color:#64ff84;
+}
+
+@keyframes shake{
+    25%{transform:translateX(-6px)}
+    50%{transform:translateX(6px)}
+    75%{transform:translateX(-3px)}
+}
+
+textarea{
+    width:100%;
+    min-height:170px;
+    resize:none;
+    background:#0c0c0c;
+    border:1px solid #555;
+    color:white;
+    outline:none;
+    padding:15px;
+    font-family:"Cormorant Garamond",serif;
+    font-size:21px;
+}
+
+.counter{
+    margin-top:7px;
+    color:#999;
+    font-size:16px;
+}
+
+.envelope{
+    width:280px;
+    height:180px;
+    background:#171717;
+    border:1px solid #555;
+    margin:0 auto 30px;
+    position:relative;
+    box-shadow:0 20px 60px #000;
+}
+
+.envelope:before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    border-left:140px solid transparent;
+    border-right:140px solid transparent;
+    border-top:100px solid #292929;
+    transform-origin:top center;
+    transition:1s;
+    z-index:3;
+}
+
+.envelope.open:before{
+    transform:rotateX(180deg);
+}
+
+.miniLetter{
+    position:absolute;
+    left:20px;
+    right:20px;
+    bottom:8px;
+    height:120px;
+    background:#ddd5c5;
+    color:#111;
+    padding:15px;
+    transition:1s;
+    z-index:1;
+}
+
+.envelope.open .miniLetter{
+    transform:translateY(-80px);
+    z-index:4;
+}
+
+#glitch{
+    position:fixed;
+    inset:0;
+    display:none;
+    background:#000;
+    z-index:100;
+}
+
+#glitch.show{
+    display:block;
+}
+
+.errorScreen{
+    position:fixed;
+    inset:0;
+    background:#000;
+    color:#43ff68;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:left;
+    font-family:monospace;
+    font-size:14px;
+    line-height:1.7;
+    animation:errorGlitch .12s infinite;
+    text-shadow:3px 0 #ff003c,-3px 0 #00ffff;
+}
+
+@keyframes errorGlitch{
+    0%{transform:translate(0)}
+    20%{transform:translate(-5px,2px)}
+    40%{transform:translate(5px,-2px)}
+    60%{transform:translate(-2px,4px)}
+    80%{transform:translate(3px,-3px)}
+    100%{transform:translate(0)}
+}
+
+.darkIdentity{
+    position:fixed!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    background:#000!important;
+    display:flex!important;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+}
+
+.identityReveal{
+    color:white;
+    text-align:center;
+    font-family:"Cormorant Garamond",serif;
+    font-size:clamp(22px,6vw,32px);
+    line-height:1.5;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div class="blood b1"></div>
+<div class="blood b2"></div>
+<div class="blood b3"></div>
+<div class="blood b4"></div>
+
+
+<!-- =========================
+     PAGE 1
+========================= -->
+
+<section class="page active" id="page1">
+
+<div class="content">
+
+<img
+id="introImage"
+class="hero"
+src="file_00000000db9482078025965b526595f5.jpg">
+
+<div id="introText" class="text">
+hallo setan
+</div>
+
+<button id="introNext" class="next hidden">
+NEXT
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PAGE 2 VIDEO
+========================= -->
+
+<section class="page videoPage" id="page2">
+
+<video
+id="video1"
+src="lv_0_20261007171508.mp4"
+playsinline>
+</video>
+
+<div id="error">
+
+<pre>
+SYSTEM ERROR
+
+ERROR_0x0000007B
+CONNECTION INTERRUPTED
+MEMORY READ FAILURE
+
+VIDEO PROCESS TERMINATED
+
+&gt; rebooting...
+&gt; rebooting...
+&gt; rebooting...
+</pre>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PAGE 3 SETAN
+========================= -->
+
+<section class="page" id="page3">
+
+<div class="content">
+
+<div class="title">
+manakah setan kesayangan gua?
+</div>
+
+<div class="small">
+pilih salah satu gambar
+</div>
+
+<div class="choiceGrid">
+
+<button class="choice" data-answer="1">
+<img src="file_00000000cbec8211b574f2644dbbb3d5.jpg">
+</button>
+
+<button class="choice" data-answer="2">
+<img src="file_000000008ee08211abc7a024b74bed10.jpg">
+</button>
+
+<button class="choice" data-answer="3">
+<img src="file_000000005d108211a931412ece1cca56.jpg">
+</button>
+
+<button class="choice" data-answer="4">
+<img src="file_000000002d14820781cbffa184cf50c9.jpg">
+</button>
+
+</div>
+
+<button id="demonSend" class="next hidden">
+KIRIM
+</button>
+
+<div id="demonResult" class="result"></div>
+
+<button id="demonNext" class="next hidden">
+NEXT
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PAGE 4
+========================= -->
+
+<section class="page" id="page4">
+
+<div class="content">
+
+<div class="paper">
+
+<div id="letter1" class="letter"></div>
+
+</div>
+
+<button id="letter1Next" class="next hidden">
+NEXT
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PAGE 5 LAKI
+========================= -->
+
+<section class="page" id="page5">
+
+<div class="content">
+
+<div class="title">
+mana laki gue lyn?
+</div>
+
+<div class="small">
+coret atau lingkari cowok yang menurut lu laki gua
+</div>
+
+<br>
+
+<div class="photoBox">
+
+<img
+src="file_00000000fb208211adfad2ed7cde90f1.jpg">
+
+<canvas id="draw"></canvas>
+
+</div>
+
+<button id="maleSend" class="next hidden">
+KIRIM
+</button>
+
+<div id="maleResult" class="result"></div>
+
+<button id="maleNext" class="next hidden">
+NEXT
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PAGE 6 IDENTITAS
+========================= -->
+
+<section class="page" id="page6">
+
+<div class="content">
+
+<div id="envelope" class="envelope">
+
+<div class="miniLetter">
+SURAT RAHASIA
+</div>
+
+</div>
+
+<div id="identityPaper" class="paper hidden">
+
+<div class="letter">
+
+gua mau cek seberapa lu tau tentang identitas asli gue.
+
+<br><br>
+
+Di sini gua mau nanya,
+siapa nama asli gue nyet?
+
+</div>
+
+</div>
+
+<div id="identityOptions" class="options hidden">
+
+<button class="option" data-answer="A">
+A. senja nandini putri juniah
+</button>
+
+<button class="option" data-answer="B">
+B. senja xaviera nandini putri juniah syafira
+</button>
+
+<button class="option" data-answer="C">
+C. maheswara xaviera nandini seraya
+</button>
+
+<button class="option" data-answer="D">
+D. nandini safira juniah safira
+</button>
+
+</div>
+
+<button id="identitySend" class="next hidden">
+KIRIM
+</button>
+
+<div id="identityResult" class="result"></div>
+
+<button id="identityNext" class="next hidden">
+NEXT
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PAGE 7
+========================= -->
+
+<section class="page" id="page7">
+
+<div class="content">
+
+<div class="title">
+menurut lu gua ini kayak gimana?
+</div>
+
+<textarea
+id="answer"
+placeholder="Tulis minimal 3 kata..."></textarea>
+
+<div id="counter" class="counter">
+0 kata
+</div>
+
+<button id="answerNext" class="next hidden">
+NEXT
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PAGE 8 SURAT TERAKHIR
+========================= -->
+
+<section class="page" id="page8">
+
+<div class="content">
+
+<div class="paper">
+
+<div id="finalLetter" class="letter"></div>
+
+</div>
+
+<button id="finalNext" class="next hidden">
+NEXT
+</button>
+
+<button id="sendWA" class="next hidden">
+KIRIM KE WHATSAPP
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     ENDING
+========================= -->
+
+<section class="page videoPage" id="ending">
+
+<video
+id="endingVideo"
+src="lv_0_20261007171508.mp4"
+playsinline>
+</video>
+
+</section>
+
+
+<div id="glitch"></div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   DATA JAWABAN
+========================= */
+
+let demonAnswer="Belum dijawab";
+let maleAnswered=false;
+let identityAnswer="Belum dijawab";
+let freeAnswer="Belum dijawab";
+
+let selectedDemon=null;
+let selectedIdentity=null;
+
+let wrongIdentity=0;
+
+
+/* =========================
+   PINDAH HALAMAN
+========================= */
+
+function goTo(id){
+
+    document
+    .querySelectorAll(".page")
+    .forEach(page=>{
+        page.classList.remove("active");
+    });
+
+    document
+    .getElementById(id)
+    .classList.add("active");
+}
+
+
+/* =========================
+   PAGE 1
+========================= */
+
+setTimeout(()=>{
+
+    const text=document.getElementById("introText");
+
+    text.innerHTML="hallo setan<br><br>eh salah foto";
+
+    setTimeout(()=>{
+
+        document.getElementById("introImage").src=
+        "file_00000000cbec8211b574f2644dbbb3d5.jpg";
+
+        text.innerHTML=
+        "nah ini baru bener.<br><br>"+
+        "Gua buatin lu semacam kartu sekaligus kuis gitu dalam bentuk link.<br><br>"+
+        "Anjayyy, iyalah olah gue anak koding informatika";
+
+        document
+        .getElementById("introNext")
+        .classList
+        .remove("hidden");
+
+    },1500);
+
+},1000);
+
+
+document
+.getElementById("introNext")
+.onclick=()=>{
+
+    goTo("page2");
+
+    const video=document.getElementById("video1");
+
+    video.currentTime=0;
+    video.play().catch(()=>{});
+
+};
+
+
+/* =========================
+   VIDEO PAGE 2
+========================= */
+
+document
+.getElementById("video1")
+.addEventListener("ended",()=>{
+
+    const error=document.getElementById("error");
+
+    error.classList.add("show");
+
+    setTimeout(()=>{
+
+        error.classList.remove("show");
+
+        goTo("page3");
+
+    },1500);
+
+});
+
+
+/* =========================
+   PILIH SETAN
+========================= */
+
+document
+.querySelectorAll("#page3 .choice")
+.forEach(choice=>{
+
+    choice.onclick=()=>{
+
+        document
+        .querySelectorAll("#page3 .choice")
+        .forEach(x=>{
+            x.classList.remove("selected");
+        });
+
+        choice.classList.add("selected");
+
+        selectedDemon=choice.dataset.answer;
+
+        demonAnswer=
+        "Pilihan "+selectedDemon;
+
+        document
+        .getElementById("demonSend")
+        .classList
+        .remove("hidden");
+
+    };
+
+});
+
+
+document
+.getElementById("demonSend")
+.onclick=()=>{
+
+    if(!selectedDemon)return;
+
+    document
+    .getElementById("demonSend")
+    .classList
+    .add("hidden");
+
+    const result=
+    document.getElementById("demonResult");
+
+    if(selectedDemon==="1"){
+
+        result.textContent=
+        "pd bener lu ngaku setan";
+
+    }else{
+
+        result.textContent=
+        "yeyyy gak ngaku setan lagi. Terharu dehhh";
+
+    }
+
+    document
+    .getElementById("demonNext")
+    .classList
+    .remove("hidden");
+
+};
+
+
+/* =========================
+   PAGE 4 SURAT
+========================= */
+
+document
+.getElementById("demonNext")
+.onclick=()=>{
+
+    goTo("page4");
+
+    typing(
+
+        document.getElementById("letter1"),
+
+`hallo nalyn guee. Eh maksudnya setan gueeee, di sini gua gak bakal ngetik banyak, lu tau sendiri yang udah jadi malah di otak atik ama ponakan gua jadi harus ulang dari awal. Jangan bosen ya di dalam link ini`,
+
+        document.getElementById("letter1Next"),
+
+        35
+    );
+
+};
+
+
+/* =========================
+   TYPING EFFECT
+========================= */
+
+function typing(element,text,button,speed){
+
+    element.textContent="";
+    button.classList.add("hidden");
+
+    let i=0;
+
+    const timer=setInterval(()=>{
+
+        element.textContent=text.substring(0,i);
+
+        i++;
+
+        if(i>text.length){
+
+            clearInterval(timer);
+
+            button.classList.remove("hidden");
+
+        }
+
+    },speed);
+
+}
+
+
+/* =========================
+   PAGE 5 CANVAS
+========================= */
+
+const canvas=document.getElementById("draw");
+const ctx=canvas.getContext("2d");
+
+let drawing=false;
+let hasDrawn=false;
+
+
+function resizeCanvas(){
+
+    const rect=canvas.getBoundingClientRect();
+
+    const dpr=window.devicePixelRatio||1;
+
+    canvas.width=rect.width*dpr;
+    canvas.height=rect.height*dpr;
+
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+}
+
+
+document
+.getElementById("letter1Next")
+.onclick=()=>{
+
+    goTo("page5");
+
+    setTimeout(resizeCanvas,100);
+
+};
+
+
+function getPoint(e){
+
+    const rect=canvas.getBoundingClientRect();
+
+    return{
+        x:e.clientX-rect.left,
+        y:e.clientY-rect.top
+    };
+
+}
+
+
+canvas.addEventListener("pointerdown",e=>{
+
+    drawing=true;
+    hasDrawn=true;
+
+    canvas.setPointerCapture(e.pointerId);
+
+    const p=getPoint(e);
+
+    ctx.beginPath();
+
+    ctx.moveTo(p.x,p.y);
+
+});
+
+
+canvas.addEventListener("pointermove",e=>{
+
+    if(!drawing)return;
+
+    const p=getPoint(e);
+
+    ctx.lineTo(p.x,p.y);
+
+    ctx.strokeStyle="#fff";
+    ctx.lineWidth=4;
+    ctx.lineCap="round";
+    ctx.lineJoin="round";
+
+    ctx.stroke();
+
+});
+
+
+canvas.addEventListener("pointerup",()=>{
+
+    drawing=false;
+
+    if(hasDrawn){
+
+        document
+        .getElementById("maleSend")
+        .classList
+        .remove("hidden");
+
+    }
+
+});
+
+
+canvas.addEventListener("pointercancel",()=>{
+
+    drawing=false;
+
+});
+
+
+/* =========================
+   KIRIM LAKI
+========================= */
+
+document
+.getElementById("maleSend")
+.onclick=()=>{
+
+    if(!hasDrawn)return;
+
+    maleAnswered=true;
+
+    document
+    .getElementById("maleSend")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("maleResult")
+    .textContent=
+    "anjayyy, bener.\n\n"+
+    "Iyalah orang gampang, cepet pencet next bestie. "+
+    "Gua punya firasat lu kepo ama halaman berikutnya.";
+
+    document
+    .getElementById("maleNext")
+    .classList
+    .remove("hidden");
+
+};
+
+
+document
+.getElementById("maleNext")
+.onclick=()=>{
+
+    goTo("page6");
+
+    const envelope=
+    document.getElementById("envelope");
+
+    envelope.classList.add("open");
+
+    setTimeout(()=>{
+
+        document
+        .getElementById("identityPaper")
+        .classList
+        .remove("hidden");
+
+        document
+        .getElementById("identityOptions")
+        .classList
+        .remove("hidden");
+
+    },1000);
+
+};
+
+
+/* =========================
+   IDENTITAS
+========================= */
+
+document
+.querySelectorAll("#identityOptions .option")
+.forEach(option=>{
+
+    option.onclick=()=>{
+
+        document
+        .querySelectorAll("#identityOptions .option")
+        .forEach(x=>{
+            x.classList.remove("selected");
+        });
+
+        option.classList.add("selected");
+
+        selectedIdentity=option.dataset.answer;
+
+        identityAnswer=option.textContent.trim();
+
+        document
+        .getElementById("identitySend")
+        .classList
+        .remove("hidden");
+
+    };
+
+});
+
+
+document
+.getElementById("identitySend")
+.onclick=()=>{
+
+    if(!selectedIdentity)return;
+
+    document
+    .getElementById("identitySend")
+    .classList
+    .add("hidden");
+
+    const result=
+    document.getElementById("identityResult");
+
+    if(selectedIdentity==="C"){
+
+        document
+        .getElementById("identityOptions")
+        .classList
+        .add("hidden");
+
+        document
+        .getElementById("identityPaper")
+        .classList
+        .add("hidden");
+
+        document
+        .getElementById("envelope")
+        .classList
+        .add("hidden");
+
+        const section=
+        document.getElementById("page6");
+
+        section.classList.add("darkIdentity");
+
+        result.innerHTML=`
+        <div class="identityReveal">
+
+            kenapa? Kaget?<br>
+            Nanti gua jelasin.<br>
+            Selesaikan dulu ini
+
+            <br>
+
+            <button id="identityFinalNext" class="next">
+                NEXT
+            </button>
+
+        </div>
+        `;
+
+        result.classList.remove("hidden");
+
+        document
+        .getElementById("identityFinalNext")
+        .onclick=()=>{
+
+            section.classList.remove("darkIdentity");
+
+            result.classList.add("hidden");
+
+            goTo("page7");
+
+        };
+
+    }else{
+
+        wrongIdentity++;
+
+        if(wrongIdentity===1){
+
+            result.textContent=
+            "salah. Coba lagi.";
+
+        }else{
+
+            const glitch=
+            document.getElementById("glitch");
+
+            glitch.innerHTML=`
+            <div class="errorScreen">
+
+                <div>
+
+                    SYSTEM ERROR<br><br>
+
+                    ERROR_0xNAME_UNKNOWN<br>
+                    IDENTITY DATA CORRUPTED<br>
+                    MEMORY ACCESS DENIED<br>
+                    USER IDENTITY FAILED<br><br>
+
+                    &gt; rebooting...
+
+                </div>
+
+            </div>
+            `;
+
+            glitch.classList.add("show");
+
+            setTimeout(()=>{
+
+                glitch.classList.remove("show");
+
+                document
+                .getElementById("identityOptions")
+                .classList
+                .add("hidden");
+
+                document
+                .getElementById("identityPaper")
+                .classList
+                .add("hidden");
+
+                document
+                .getElementById("envelope")
+                .classList
+                .add("hidden");
+
+                goTo("page7");
+
+            },1800);
+
+        }
+
+    }
+
+};
+
+
+/* =========================
+   PAGE 7 JAWABAN BEBAS
+========================= */
+
+document
+.getElementById("answer")
+.addEventListener("input",()=>{
+
+    const value=
+    document.getElementById("answer").value.trim();
+
+    const words=
+    value
+    .split(/\s+/)
+    .filter(Boolean);
+
+    freeAnswer=value||"Belum diisi";
+
+    document
+    .getElementById("counter")
+    .textContent=
+    words.length+" kata";
+
+    if(words.length>=3){
+
+        document
+        .getElementById("answerNext")
+        .classList
+        .remove("hidden");
+
+    }else{
+
+        document
+        .getElementById("answerNext")
+        .classList
+        .add("hidden");
+
+    }
+
+});
+
+
+/* =========================
+   PAGE 8
+========================= */
+
+document
+.getElementById("answerNext")
+.onclick=()=>{
+
+    goTo("page8");
+
+    typing(
+
+        document.getElementById("finalLetter"),
+
+`lyn. makasih udah jadi sahabat terbaik gua, makasih udah nerima gua apa adanya bukan ada apanya kayak yang di sebelah. Eyyy malah jadi ajang sindiran ni link.
+
+Oke serius, pokoknya makasih udah hadir di salah satu bab cerita di hidup gua, gua gak tau kisah kita ini bakal berhenti di bab berapa.
+
+Mau gak sih lu sahabatan sama gua sampai bab hidup gua ini selesai?
+
+Gak usah sok mual, gua tau lu sekarang kek jijik gua ngetik beginian, tapi gua serius anjay.
+
+Gua pengen sahabatan sama lu sampai akhir hayat.
+
+To me, you're not just a friend anymore, you're my family.
+
+That's why if we have problems, don't keep them from each other, okay?
+
+We're like mirrors, you know. If you're sad, I'm sad too, if it's the other way around, I don't know`,
+
+        document.getElementById("finalNext"),
+
+        18
+    );
+
+};
+
+
+/* =========================
+   FINAL NEXT
+========================= */
+
+document
+.getElementById("finalNext")
+.onclick=()=>{
+
+    document
+    .getElementById("finalNext")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("sendWA")
+    .classList
+    .remove("hidden");
+
+};
+
+
+/* =========================
+   KIRIM KE WHATSAPP
+========================= */
+
+document
+.getElementById("sendWA")
+.onclick=()=>{
+
+    const phone="6285147870569";
+
+    const message=
+`HALLO NALYN! 😭
+
+Ini jawaban dari kuis lu:
+
+1. Manakah setan kesayangan gua?
+${demonAnswer}
+
+2. Mana laki gue Lyn?
+Sudah dicoret/dilingkari oleh pengisi kuis.
+
+3. Siapa nama asli gue?
+${identityAnswer}
+
+4. Menurut lu gua ini kayak gimana?
+${freeAnswer}
+
+— dikirim dari kartu/kuis ini`;
+
+    const wa=
+    "https://wa.me/"+
+    phone+
+    "?text="+
+    encodeURIComponent(message);
+
+    window.open(wa,"_blank");
+
+    setTimeout(()=>{
+
+        goTo("ending");
+
+        const video=
+        document.getElementById("endingVideo");
+
+        video.currentTime=0;
+
+        video.play().catch(()=>{});
+
+    },500);
+
+};
+
+</script>
+
+</body>
+</html>
